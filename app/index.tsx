@@ -1,3 +1,4 @@
+import BackgroundSound from "@/components/BackgroundSound";
 import MovingBackground from "@/components/MovingBackground";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
@@ -41,6 +42,7 @@ export default function Home() {
             resizeMode="cover"
             style={styles.background}
         >
+            <BackgroundSound source={require("@/assets/audios/jojo.mp3")}/>
             <SafeAreaView style={styles.screen}>
                 <View style={styles.headerContainer}>
                     <View style={styles.titleRow}>
@@ -85,17 +87,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 55,
-        fontWeight: "bold",
-        color: "#402836",
-        marginTop: 0,
+        fontSize: 50,
+        marginTop: 30,
         fontFamily: "PublicPixel",
         textShadowColor: "rgba(0, 0, 0, 0.5)",
         textShadowOffset: { 
             width: 3, 
             height: 3, 
         },
-        textShadowRadius: 0,
+        textShadowRadius: 1,
         paddingRight: 3,
     },
     headerContainer: {

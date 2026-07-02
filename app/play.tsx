@@ -1,28 +1,63 @@
+import Bird from "@/components/Bird";
 import MovingBackground from "@/components/MovingBackground";
-import { useEffect } from "react";
-import { useAudioPlayer } from "expo-audio";
-import { Image, ImageBackground, Pressable, StyleSheet} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Pipe from "@/components/Pipe";
+import { DURATION } from "@/constants/animation";
+import { JUMP } from "@/constants/bird";
+import { GROUND_HEIGHT } from "@/constants/ground";
+import { CAP_HEIGHT, GAP_SIZE } from "@/constants/pipe";
+import { useGame } from "@/hooks/game";
+import { useAudioPlayer } from "expo-audio";
+import { useEffect, useState } from "react";
+import { Dimensions, ImageBackground, Pressable, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+interface Obstacle {
+  id: string;
+  gapY: number;
+}
 
 export default function Play() {
-    const jumpSound = useAudioPlayer(require("@/assets/Sounds/mine.mp3"))
+  const { height } = Dimensions.get("window");
+  const { velocity } = useGame();
+  const [obstacles, setObstacles] = useState([] as Obstacle[]);
+  const jumpSound = useAudioPlayer(require("@/assets/audios/fart-meme-sound.mp3"));
+  const pointSound = useAudioPlayer(require("@/assets/audios/mine.mp3"));
 
-    function handleJump() {
-        jumpSound.seekTo(0);
-        jumpSound.play();
-    }
+  function handleJump() {
+    velocity.value = JUMP;
+    try {
+      jumpSound.seekTo(0);
+      jumpSound.play();
+    } catch (error) { }
+  }
 
-    useEffect(() => {
-        jumpSound.seekTo(0)
-        jumpSound.loop = true
-        jumpSound.play()
+  function spawnObstacle() {
+    setObstacles((oldValue) => [
+      ...oldValue,
+      { id: Date.now().toString(), gapY: randomGapY() },
+    ]);
+  }
 
-        return () => {
-            jumpSound.pause()
-        }
-    }, [])
-  
+  function removeObstacle(id: string) {
+    setObstacles((oldValue) => oldValue.filter((item) => item.id !== id));
+    try {
+      pointSound.seekTo(0);
+      pointSound.play();
+    } catch (error) { }
+  }
+
+  function randomGapY() {
+    const min = CAP_HEIGHT + GAP_SIZE / 2;
+    const max = height - CAP_HEIGHT - GROUND_HEIGHT - GAP_SIZE / 2;
+    
+    return Math.random() * (max - min) + min;
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => spawnObstacle(), DURATION / 4);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <ImageBackground
@@ -30,14 +65,17 @@ export default function Play() {
       resizeMode="cover"
       style={styles.background}
     >
-      <Pressable onPress={handleJump}>
+      <Pressable onPress={handleJump} style={styles.background}>
         <SafeAreaView style={styles.screen}>
-          <Image
-            source={require("@/assets/images/bird.png")}
-            style={styles.bird}
-          />
+          <Bird />
 
-          <Pipe gapY={180} />
+          {obstacles.map((obstacle) => (
+            <Pipe
+              key={obstacle.id}
+              gapY={obstacle.gapY}
+              onEnd={() => removeObstacle(obstacle.id)}
+            />
+          ))}
         </SafeAreaView>
       </Pressable>
 
@@ -45,7 +83,6 @@ export default function Play() {
     </ImageBackground>
   );
 }
-
 
 const styles = StyleSheet.create({
   background: {
@@ -56,14 +93,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     alignItems: "center",
-
   },
-
   bird: {
-    width: 130,
-    height: 65,
+    width: 65,
+    height: 34,
     position: "absolute",
     top: "50%",
     left: 100,
-  }
+  },
 });

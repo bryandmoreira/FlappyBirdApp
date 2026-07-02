@@ -1,3 +1,4 @@
+import { GameProvider } from "@/hooks/game";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -46,9 +47,11 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="play" options={{ headerShown: false }} />
-    </Stack>
+    <GameProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="play" options={{ headerShown: false }} />
+      </Stack>
+    </GameProvider>
   );
 }

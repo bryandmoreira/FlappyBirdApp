@@ -1,6 +1,7 @@
 import { Dimensions, Image, StyleSheet, View, } from "react-native";
 import Animated, {useSharedValue, useAnimatedStyle, Easing, withRepeat, withTiming} from "react-native-reanimated";
 import { useEffect } from "react";
+import { GROUND_HEIGHT } from "@/constants/ground";
 
 export default function MovingBackground() {
   const { width } = Dimensions.get("window");
@@ -48,6 +49,6 @@ const styles = StyleSheet.create({
 
   image: {
     width: "100%",
-    height: 70,
+    height: GROUND_HEIGHT,
   },
 });

@@ -4,6 +4,8 @@ import { useGame } from "@/hooks/game"
 import { useEffect } from "react"
 import Animated, { useAnimatedStyle, useFrameCallback } from "react-native-reanimated"
 import { GROUND_HEIGHT } from "@/constants/ground"
+import { router } from "expo-router"
+import { runOnJS } from "react-native-worklets"
 
 export default function Bird() {
     const { height } = Dimensions.get("window")
@@ -16,12 +18,21 @@ export default function Bird() {
 
         velocity.value += GRAVITY * t;
         birdY.value += velocity.value * t;
+
+
+        if (birdY.value > height - BIRD_HEIGHT - GROUND_HEIGHT) {
+            runOnJS(router.replace)("/game-over")
+
+        }
+
+        if (birdY.value < 0) {
+            birdY.value = 0;
+            velocity.value = 0;
+        }
     })
 
-    if(birdY.value > height - BIRD_HEIGHT - GROUND_HEIGHT) {
-        birdY.value = height - BIRD_HEIGHT - GROUND_HEIGHT
-        velocity.value = 0
-    }
+
+
 
     useEffect(() => {
         frame.setActive(true)
@@ -30,14 +41,19 @@ export default function Bird() {
     }, [frame])
 
     const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: birdY.value }],
+        transform: [
+            { translateY: birdY.value },
+            {
+                rotate: `${(velocity.value / 1000) * 90}deg`,
+            }
+        ],
     }))
 
 
     return (
-        <Animated.Image 
-        source={require("@/assets/images/bird.png")}
-        style={[styles.bird, animatedStyle]}
+        <Animated.Image
+            source={require("@/assets/images/bird.png")}
+            style={[styles.bird, animatedStyle]}
         />
     )
 }

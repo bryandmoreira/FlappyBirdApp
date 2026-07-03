@@ -1,6 +1,5 @@
 import BackgroundSound from "@/components/BackgroundSound";
 import MovingBackground from "@/components/MovingBackground";
-import { useGame } from "@/hooks/game";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -15,8 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Home() {
-    const { reset } = useGame();
+export default function GameOver() {
     const birdY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -56,19 +54,19 @@ export default function Home() {
                             ]}
                             resizeMode="contain"
                         />
-                        <Text style={styles.title}>Flappy</Text>
-                        <Text style={[styles.title, styles.titleSuffix]}> Plane</Text>
+                        <Text style={styles.title}>Game over</Text>
+                       
                     </View>
                 </View>
 
 
-                <Link href="/play" asChild replace>
-                    <TouchableOpacity style={styles.button} onPress={reset}>
+                <Link href="/" asChild replace>
+                    <TouchableOpacity style={styles.button}>
                         <LinearGradient
                             style={styles.buttonGradient}
                             colors={["#FDD179", "#402836"]}
                         >
-                            <Text style={styles.buttonText}>Jogar</Text>
+                            <Text style={styles.buttonText}>Voltar ao menu</Text>
                         </LinearGradient>
                     </TouchableOpacity>
                 </Link>

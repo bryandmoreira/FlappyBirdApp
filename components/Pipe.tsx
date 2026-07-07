@@ -1,16 +1,17 @@
 import { DURATION } from "@/constants/animation";
+import { BIRD } from "@/constants/bird";
 import { CAP_HEIGHT, GAP_SIZE, PIPE_WIDTH } from "@/constants/pipe";
+import { useGame } from "@/hooks/game";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, Image } from "react-native";
+import { Dimensions, Image, StyleSheet } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-
 } from "react-native-reanimated";
-
 
 interface Props {
   gapY: number;
@@ -18,12 +19,14 @@ interface Props {
 }
 
 export default function Pipe({ gapY, onEnd }: Props) {
+  const { birdY, gameOver } = useGame();
   const { height, width } = Dimensions.get("window");
   const topHeight = gapY - GAP_SIZE / 2;
   const bottomY = gapY + GAP_SIZE / 2;
   const bottomHeight = height - bottomY;
 
   const translateX = useSharedValue(0);
+  const disabled = useSharedValue(false)
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: -translateX.value }],
@@ -36,9 +39,35 @@ export default function Pipe({ gapY, onEnd }: Props) {
         duration: DURATION,
         easing: Easing.linear,
       },
-      () => runOnJS(onEnd)(),
+      () => {
+        if (translateX.value === width) {
+          runOnJS(onEnd)();
+        }
+      },
     );
   }, [translateX]);
+
+  useAnimatedReaction(
+    () => ({ birdY: birdY.value, translateX: translateX.value }),
+    ({ birdY, translateX }) => {
+      "worklet";
+
+      if(disabled.value) return
+
+      const hitX =
+        BIRD.x + BIRD.height * BIRD.aspectRatio - BIRD.hitbox.right >
+          width - translateX &&
+        BIRD.x + BIRD.hitbox.left < width - translateX + PIPE_WIDTH;
+
+      const hitTop = birdY < gapY - GAP_SIZE / 2;
+      const hitBottom = birdY + BIRD.height > gapY + GAP_SIZE / 2;
+
+      if (hitX && (hitTop || hitBottom)) {
+        disabled.value = true
+        runOnJS(gameOver)();
+      }
+    },
+  );
 
   return (
     <>
@@ -101,22 +130,14 @@ const styles = StyleSheet.create({
   pipe: {
     position: "absolute",
     width: PIPE_WIDTH,
-    backgroundColor: "#FDD179",
-    borderLeftWidth: 4,
-    borderRightWidth: 4,
-    borderColor: "black",
   },
   cap: {
     position: "absolute",
     width: PIPE_WIDTH + 10,
     height: CAP_HEIGHT,
-    backgroundColor: "#FDD179",
-    borderWidth: 4,
-    borderColor: "black",
   },
   image: {
     width: "100%",
     height: "100%",
-
-  }
+  },
 });

@@ -1,15 +1,18 @@
 import Bird from "@/components/Bird";
 import MovingBackground from "@/components/MovingBackground";
 import Pipe from "@/components/Pipe";
-import { DURATION } from "@/constants/animation";
-import { JUMP } from "@/constants/bird";
+import { DURATION, JUMP } from "@/constants/animation";
+import { BIRD } from "@/constants/bird";
+
 import { GROUND_HEIGHT } from "@/constants/ground";
 import { CAP_HEIGHT, GAP_SIZE } from "@/constants/pipe";
 import { useGame } from "@/hooks/game";
 import { useAudioPlayer } from "expo-audio";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 
 interface Obstacle {
@@ -17,14 +20,19 @@ interface Obstacle {
   gapY: number;
 }
 
+const { height } = Dimensions.get("window")
+
 export default function Play() {
   const { height } = Dimensions.get("window");
   const { velocity, score, setScore } = useGame();
   const [obstacles, setObstacles] = useState([] as Obstacle[]);
-  const jumpSound = useAudioPlayer(require("@/assets/audios/carro.mp3"));
+  const jumpSound = useAudioPlayer(require("@/assets/audios/pou.mp3"));
   const pointSound = useAudioPlayer(require("@/assets/audios/faaah.mp3"));
+  const [started, setStarted] = useState(false);
 
   function handleJump() {
+    if (!started) setStarted(true);
+
     velocity.value = JUMP;
     try {
       jumpSound.seekTo(0);
@@ -57,10 +65,12 @@ export default function Play() {
   }
 
   useEffect(() => {
-    const interval = setInterval(() => spawnObstacle(), DURATION / 3);
+    if (started) {
+      const interval = setInterval(() => spawnObstacle(), DURATION / 3);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [started]);
 
   return (
     <ImageBackground
@@ -70,7 +80,12 @@ export default function Play() {
     >
       <Pressable onPress={handleJump} style={styles.background}>
         <SafeAreaView style={styles.screen}>
-          <Bird />
+          {started ? (
+            <Bird />
+          ) : (
+            <Image source={require("@/assets/images/bird.png")} 
+            style={styles.bird}/>
+          )}
 
           {obstacles.map((obstacle) => (
             <Pipe
@@ -83,7 +98,7 @@ export default function Play() {
           <View style={styles.score}>
             <Text style={styles.scoreText}>{score}</Text>
             <Image source={require("@/assets/images/coin.gif")}
-            style={styles.scoreImage} />
+              style={styles.scoreImage} />
           </View>
         </SafeAreaView>
       </Pressable>
@@ -104,20 +119,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bird: {
-    width: 65,
-    height: 34,
+    width: BIRD.height * BIRD.aspectRatio,
+    height: BIRD.height,
     position: "absolute",
-    top: "50%",
-    left: 100,
+    top: height / 2,
+    left: BIRD.x,
   },
 
   score: {
     position: "absolute",
     top: 20,
-    right : 20,
+    right: 20,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10, 
+    gap: 10,
   },
   scoreImage: {
     height: 20,

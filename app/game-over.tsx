@@ -1,11 +1,13 @@
 import BackgroundSound from "@/components/BackgroundSound";
 import MovingBackground from "@/components/MovingBackground";
+import { useGame } from "@/hooks/game";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
     Animated,
     Easing,
+    Image,
     ImageBackground,
     StyleSheet,
     Text,
@@ -15,7 +17,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GameOver() {
+    const { score } = useGame();
     const birdY = useRef(new Animated.Value(0)).current;
+
+   const getScoreMessage = (score: number) => {
+    if (score >= 20) return "Amassou!";
+    if (score > 10) return "Muito bom!";
+    if (score < 5) return "Pode melhorar!";
+    return "Continue jogando!"; 
+};
 
     useEffect(() => {
         Animated.loop(
@@ -38,16 +48,16 @@ export default function GameOver() {
 
     return (
         <ImageBackground
-            source={require("@/assets/images/background.png")}
+            source={require("@/assets/images/city.webp")}
             resizeMode="cover"
             style={styles.background}
         >
-            <BackgroundSound source={require("@/assets/audios/jojo.mp3")} />
+            <BackgroundSound source={require("@/assets/audios/background.mp3")} />
             <SafeAreaView style={styles.screen}>
                 <View style={styles.headerContainer}>
                     <View style={styles.titleRow}>
                         <Animated.Image
-                            source={require("@/assets/images/bird.png")}
+                            source={require("@/assets/images/drone.gif")}
                             style={[
                                 styles.birdLeft,
                                 { transform: [{ translateY: birdY }] },
@@ -55,16 +65,26 @@ export default function GameOver() {
                             resizeMode="contain"
                         />
                         <Text style={styles.title}>Game over</Text>
-                       
+
+
+
                     </View>
                 </View>
+
+                <View style={styles.score}>
+                    <Text style={styles.scoreText}>{score}</Text>
+                    <Image source={require("@/assets/images/coin.gif")}
+                        style={styles.scoreImage} />
+                </View>
+
+                <Text style={styles.messageText}>{getScoreMessage(score)}</Text>
 
 
                 <Link href="/" asChild replace>
                     <TouchableOpacity style={styles.button}>
                         <LinearGradient
                             style={styles.buttonGradient}
-                            colors={["#FDD179", "#402836"]}
+                            colors={["#621AD3", "#512597"]}
                         >
                             <Text style={styles.buttonText}>Voltar ao menu</Text>
                         </LinearGradient>
@@ -87,10 +107,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
+        color: "white",
         fontSize: 50,
         marginTop: 30,
         fontFamily: "PublicPixel",
-        textShadowColor: "rgba(0, 0, 0, 0.5)",
+        textShadowColor: "#FF00F6",
         textShadowOffset: {
             width: 3,
             height: 3,
@@ -122,9 +143,9 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: "black",
         position: "absolute",
-        top: "50%",
+        top: "55%",
         borderWidth: 2,
-        borderColor: "#FDD179",
+        borderColor: "#ffffff",
         borderRadius: 12,
 
     },
@@ -147,6 +168,39 @@ const styles = StyleSheet.create({
         textShadowColor: "black",
         fontFamily: "PublicPixel",
     },
-    
+
+    score: {
+        marginTop: 15,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    scoreImage: {
+        height: 20,
+        width: 20,
+    },
+    scoreText: {
+        color: "white",
+        fontSize: 20,
+        fontFamily: "PublicPixel",
+        textShadowColor: "black",
+        textShadowOffset: {
+            width: 1,
+            height: 1,
+        },
+    },
+
+    messageText: {
+        marginTop: 10,
+        fontSize: 16,
+        fontFamily: "PublicPixel",
+        color: "white",
+        textShadowColor: "black",
+        textShadowOffset: { width: 1, height: 1 },
+    },
 },
+
+
+
+
 );

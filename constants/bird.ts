@@ -1,6 +1,6 @@
 export const BIRD = {
   height: 25,
-  aspectRatio: 168 / 86,
+  aspectRatio: 325 / 294,
   x: 100,
 
   hitbox: {

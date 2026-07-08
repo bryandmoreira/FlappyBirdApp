@@ -54,7 +54,7 @@ export default function Bird() {
 
   return (
     <Animated.Image
-      source={require("@/assets/images/bird.png")}
+      source={require("@/assets/images/drone.png")}
       style={[styles.bird, animatedStyle]}
     />
   );

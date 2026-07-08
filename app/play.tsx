@@ -26,8 +26,8 @@ export default function Play() {
   const { height } = Dimensions.get("window");
   const { velocity, score, setScore } = useGame();
   const [obstacles, setObstacles] = useState([] as Obstacle[]);
-  const jumpSound = useAudioPlayer(require("@/assets/audios/pou.mp3"));
-  const pointSound = useAudioPlayer(require("@/assets/audios/faaah.mp3"));
+  const jumpSound = useAudioPlayer(require("@/assets/audios/wing.mp3"));
+  const pointSound = useAudioPlayer(require("@/assets/audios/point.mp3"));
   const [started, setStarted] = useState(false);
 
   function handleJump() {
@@ -74,7 +74,7 @@ export default function Play() {
 
   return (
     <ImageBackground
-      source={require("@/assets/images/background.png")}
+      source={require("@/assets/images/city.webp")}
       resizeMode="cover"
       style={styles.background}
     >
@@ -83,8 +83,8 @@ export default function Play() {
           {started ? (
             <Bird />
           ) : (
-            <Image source={require("@/assets/images/bird.png")} 
-            style={styles.bird}/>
+            <Image source={require("@/assets/images/drone.png")}
+              style={styles.bird} />
           )}
 
           {obstacles.map((obstacle) => (
@@ -133,12 +133,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+
   },
   scoreImage: {
     height: 20,
     width: 20,
   },
   scoreText: {
+    color: "white",
     fontSize: 20,
     fontFamily: "PublicPixel",
     textShadowColor: "black",

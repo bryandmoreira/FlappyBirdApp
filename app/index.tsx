@@ -40,16 +40,16 @@ export default function Home() {
 
     return (
         <ImageBackground
-            source={require("@/assets/images/background.png")}
+            source={require("@/assets/images/city.webp")}
             resizeMode="cover"
             style={styles.background}
         >
-            <BackgroundSound source={require("@/assets/audios/jojo.mp3")} />
+            <BackgroundSound source={require("@/assets/audios/background.mp3")} />
             <SafeAreaView style={styles.screen}>
                 <View style={styles.headerContainer}>
                     <View style={styles.titleRow}>
                         <Animated.Image
-                            source={require("@/assets/images/bird.png")}
+                            source={require("@/assets/images/drone.gif")}
                             style={[
                                 styles.birdLeft,
                                 { transform: [{ translateY: birdY }] },
@@ -57,7 +57,7 @@ export default function Home() {
                             resizeMode="contain"
                         />
                         <Text style={styles.title}>Flappy</Text>
-                        <Text style={[styles.title, styles.titleSuffix]}> Plane</Text>
+                        <Text style={[styles.title, styles.titleSuffix]}> Drone</Text>
                     </View>
                 </View>
 
@@ -66,7 +66,7 @@ export default function Home() {
                     <TouchableOpacity style={styles.button} onPress={reset}>
                         <LinearGradient
                             style={styles.buttonGradient}
-                            colors={["#FDD179", "#402836"]}
+                            colors={["#621AD3", "#512597"]}
                         >
                             <Text style={styles.buttonText}>Jogar</Text>
                         </LinearGradient>
@@ -90,9 +90,10 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 50,
+        color: "white",
         marginTop: 30,
         fontFamily: "PublicPixel",
-        textShadowColor: "rgba(0, 0, 0, 0.5)",
+        textShadowColor: "#FF00F6",
         textShadowOffset: {
             width: 3,
             height: 3,
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: "50%",
         borderWidth: 2,
-        borderColor: "#FDD179",
+        borderColor: "white",
         borderRadius: 12,
 
     },

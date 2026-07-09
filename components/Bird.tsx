@@ -1,7 +1,9 @@
+// components/Bird.tsx
 import { GRAVITY } from "@/constants/animation";
 import { BIRD } from "@/constants/bird";
 import { GROUND_HEIGHT } from "@/constants/ground";
 import { useGame } from "@/hooks/game";
+import { useSkin } from "@/hooks/skin";
 import { useEffect } from "react";
 import { Dimensions, StyleSheet } from "react-native";
 import Animated, {
@@ -12,9 +14,11 @@ import Animated, {
 } from "react-native-reanimated";
 
 export default function Bird() {
-    const disabled = useSharedValue(false)
+  const disabled = useSharedValue(false);
   const { height } = Dimensions.get("window");
   const { birdY, velocity, gameOver } = useGame();
+  const { skin } = useSkin();
+
   const frame = useFrameCallback((frameInfo) => {
     "worklet";
 
@@ -27,7 +31,7 @@ export default function Bird() {
       birdY.value >
       height - BIRD.height + BIRD.hitbox.bottom - GROUND_HEIGHT
     ) {
-        disabled.value = true
+      disabled.value = true;
       runOnJS(gameOver)();
     }
 
@@ -54,7 +58,7 @@ export default function Bird() {
 
   return (
     <Animated.Image
-      source={require("@/assets/images/drone.png")}
+      source={skin.source}
       style={[styles.bird, animatedStyle]}
     />
   );
